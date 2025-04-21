@@ -4,7 +4,7 @@
   
   // Helper function to get status color
   function getStatusColor(status) {
-    switch (status) {
+    switch (status.state) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'processing':
@@ -44,7 +44,7 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{file.name}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span class={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(file.status)}`}>
-                {file.status}
+                {file.status.message}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">

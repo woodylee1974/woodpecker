@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import shutil
@@ -36,11 +37,13 @@ async def upload_file(file: UploadFile = File(...)):
     
     return {"message": "File uploaded and extracted successfully"}
 
+
 @app.post("/backend/cleanup")
 async def cleanup():
     if UPLOAD_DIR.exists():
         shutil.rmtree(UPLOAD_DIR)
     return {"message": "Upload directory cleaned successfully"}
+
 
 @app.post("/backend/compare")
 async def compare_files():
@@ -56,6 +59,41 @@ async def compare_files():
     }
     
     return results
+
+
+@app.get("/backend/file-status")
+async def get_file_status():
+    data = {
+        'files': [
+        {
+            'name': "file1",
+            "status": {'state':"pending", 'message': "waiting"},
+            "progress": 10
+        },
+        {
+            'name': "file1",
+            "status": {'state': "pending", 'message': "waiting"},
+            "progress": 10
+        },
+        {
+            'name': "file1",
+            "status": {'state': "pending", 'message': "waiting"},
+            "progress": 10
+        },
+        {
+            'name': "file1",
+            "status": {'state': "pending", 'message': "waiting"},
+            "progress": 10
+        }
+    ],
+       'all_indexed': False
+    }
+
+    return JSONResponse(
+            content= data,
+            status_code=200
+        )
+
 
 if __name__ == "__main__":
     import uvicorn

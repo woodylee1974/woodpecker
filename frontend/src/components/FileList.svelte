@@ -5,6 +5,7 @@
   // Props
   export let fileStatuses = {};
   export let allFilesIndexed = false;
+  let files = [];
   
   // Events
   import { createEventDispatcher } from 'svelte';
@@ -13,11 +14,11 @@
   let statusInterval;
   
   // Convert fileStatuses object to array format expected by FileStatusTable
-  $: files = Object.entries(fileStatuses).map(([name, status]) => ({
-    name,
-    status: status.status,
-    progress: status.progress
-  }));
+//  $: files = Object.entries(fileStatuses).map(([name, status]) => ({
+//    name,
+//    status: status.status,
+//    progress: status.progress
+//  }));
   
   // Start polling for file status
   function startStatusPolling() {
@@ -31,7 +32,8 @@
       try {
         const response = await fetch('http://localhost:8000/backend/file-status');
         const data = await response.json();
-        fileStatuses = data.files;
+        files = data.files;
+        console.log(fileStatuses);
         allFilesIndexed = data.all_indexed;
         
         // Dispatch event to parent component
