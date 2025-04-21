@@ -4,8 +4,10 @@ import os
 import shutil
 import zipfile
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 import json
+import time
+import random
 from utils.file_man import unzip_file
 
 app = FastAPI()
@@ -38,7 +40,6 @@ async def upload_file(file: UploadFile = File(...)):
 async def cleanup():
     if UPLOAD_DIR.exists():
         shutil.rmtree(UPLOAD_DIR)
-    UPLOAD_DIR.mkdir(exist_ok=True)
     return {"message": "Upload directory cleaned successfully"}
 
 @app.post("/backend/compare")
