@@ -73,22 +73,22 @@ def calculate_pairwise_overlap(doc_texts, identical_ngrams):
 
     # 计算每个文档的总n-grams
     doc_ngram_counts = {name: len(get_ngrams(text)) for name, text in doc_texts.items()}
+    doc_positions = defaultdict(list)
 
     for ngram_hash, locations in identical_ngrams.items():
-        doc_positions = defaultdict(list)
         for doc_name, ngram, pos in locations:
             doc_positions[doc_name].append((ngram, pos))
 
-        for doc1, doc2 in combinations(doc_positions.keys(), 2):
-            i = doc_names.index(doc1)
-            j = doc_names.index(doc2)
-            shared_ngrams = len(doc_positions[doc1])  # Number of shared n-grams
-            # Use the average of the two documents' n-gram counts as denominator
-            avg_ngrams = (doc_ngram_counts[doc1] + doc_ngram_counts[doc2]) / 2
-            if avg_ngrams > 0:
-                overlap = (shared_ngrams / avg_ngrams) * 100
-                overlap_matrix[i][j] = overlap
-                overlap_matrix[j][i] = overlap
+    for doc1, doc2 in combinations(doc_positions.keys(), 2):
+        i = doc_names.index(doc1)
+        j = doc_names.index(doc2)
+        shared_ngrams = len(doc_positions[doc1])  # Number of shared n-grams
+        # Use the average of the two documents' n-gram counts as denominator
+        avg_ngrams = (doc_ngram_counts[doc1] + doc_ngram_counts[doc2]) / 2
+        if avg_ngrams > 0:
+            overlap = (shared_ngrams / avg_ngrams) * 100
+            overlap_matrix[i][j] = overlap
+            overlap_matrix[j][i] = overlap
 
     return overlap_matrix, doc_names
 
@@ -148,18 +148,17 @@ def main(folder_path):
     print_overlap_matrix(overlap_matrix, doc_names)
 
     # 计算总重合占比
-    total_words = sum(len(text.split()) for text in doc_texts.values())
+    total_words = sum(len(text) for text in doc_texts.values())
     # Calculate unique shared words
-    shared_words = set()
+    identical_length = 0
     for locations in identical_ngrams.values():
         ngram = locations[0][1]  # Get the n-gram text
-        words = ngram.split()
-        shared_words.update(words)
-    identical_word_count = sum(len(word.split()) for word in shared_words) * len(doc_texts)
+        identical_length += len(ngram)
+    identical_word_count = identical_length
     proportion = (identical_word_count / total_words * 100) if total_words > 0 else 0
     print(f"\n2. 完全相同表述的总体占比: {proportion:.2f}%")
 
 
 if __name__ == "__main__":
-    folder_path = r"/home/woody/aid/doc_dup_chk/sample_doc"  # 替换为实际路径
+    folder_path = r"/home/woody/aid/woodpecker/sample_doc/docx"  # 替换为实际路径
     main(folder_path)
