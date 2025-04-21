@@ -66,7 +66,7 @@
 </script>
 
 <main class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">Text Comparison Tool</h1>
+  <h1 class="text-3xl font-bold mb-8">投标书检查工具（原型:v0.0.1）</h1>
   
   <div class="space-y-6">
     <div class="bg-white p-6 rounded-lg shadow-md">
