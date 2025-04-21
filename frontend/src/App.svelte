@@ -23,11 +23,6 @@
       });
       const data = await response.json();
       uploadStatus = data.message || data.error;
-      
-      if (data.message) {
-        // Start polling for file status
-        fileList.startPolling();
-      }
     } catch (error) {
       uploadStatus = 'Error uploading file: ' + error.message;
     } finally {
@@ -56,6 +51,25 @@
     }
   }
   
+  async function handleScan() {
+    try {
+      isLoading = true;
+      const response = await fetch('http://localhost:8000/backend/scan', {
+        method: 'POST'
+      });
+      const data = await response.json();
+
+      if (data.message) {
+        // Start polling for file status
+        fileList.startPolling();
+      }
+    } catch (error) {
+      uploadStatus = 'Error comparing files: ' + error.message;
+    } finally {
+      isLoading = false;
+    }
+  }
+
   async function handleCompare() {
     try {
       isLoading = true;
@@ -63,15 +77,14 @@
         method: 'POST'
       });
       const data = await response.json();
-      comparisonResults = data.similar_segments || [];
-      uploadStatus = 'Comparison completed';
     } catch (error) {
       uploadStatus = 'Error comparing files: ' + error.message;
     } finally {
       isLoading = false;
     }
   }
-  
+
+
   function handleStatusUpdate(event) {
     const { fileStatuses: newFileStatuses, allFilesIndexed: newAllFilesIndexed } = event.detail;
     fileStatuses = newFileStatuses;
@@ -92,7 +105,7 @@
       {allFilesIndexed}
       on:upload={handleUpload}
       on:cleanup={handleCleanup}
-      on:compare={handleCompare}
+      on:scan={handleScan}
     />
     
     <FileList

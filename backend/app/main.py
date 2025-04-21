@@ -10,6 +10,8 @@ import json
 import time
 import random
 from utils.file_man import unzip_file
+from utils.scaner import start_scan, get_scan_status
+
 
 app = FastAPI()
 
@@ -45,6 +47,12 @@ async def cleanup():
     return {"message": "Upload directory cleaned successfully"}
 
 
+@app.post("/backend/scan")
+async def scan_files():
+    start_scan()
+    return {"message": "成功启动扫描..."}
+
+
 @app.post("/backend/compare")
 async def compare_files():
     # This is a placeholder for your comparison algorithm
@@ -63,32 +71,7 @@ async def compare_files():
 
 @app.get("/backend/file-status")
 async def get_file_status():
-    data = {
-        'files': [
-        {
-            'name': "file1",
-            "status": {'state':"pending", 'message': "waiting"},
-            "progress": 10
-        },
-        {
-            'name': "file1",
-            "status": {'state': "pending", 'message': "waiting"},
-            "progress": 10
-        },
-        {
-            'name': "file1",
-            "status": {'state': "pending", 'message': "waiting"},
-            "progress": 10
-        },
-        {
-            'name': "file1",
-            "status": {'state': "pending", 'message': "waiting"},
-            "progress": 10
-        }
-    ],
-       'all_indexed': False
-    }
-
+    data = get_scan_status()
     return JSONResponse(
             content= data,
             status_code=200

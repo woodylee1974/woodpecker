@@ -23,10 +23,14 @@
     dispatch('cleanup');
   }
   
+  function handleScan() {
+    dispatch('scan');
+  }
+
   function handleCompare() {
     dispatch('compare');
   }
-  
+
   // Function to reset the file input (can be called from parent)
   export function resetFileInput() {
     file = null;
@@ -54,19 +58,26 @@
       disabled={!file || isLoading}
       class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
     >
-      Upload
+      上传到缓冲区
     </button>
     <button
       on:click={handleCleanup}
       disabled={isLoading}
       class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
     >
-      Clean Up
+      清空缓冲区
+    </button>
+    <button
+      on:click={handleScan}
+      disabled={isLoading}
+      class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+    >
+      扫描文件
     </button>
     <button
       on:click={handleCompare}
       disabled={isLoading || !allFilesIndexed}
-      class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+      class="bg-green-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50"
     >
       比较文件
     </button>

@@ -4,6 +4,8 @@ import os
 import shutil
 from io import BytesIO
 
+UPLOAD_DIR = "uploads"
+
 def clear_folder(folder_path):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
@@ -30,4 +32,12 @@ def unzip_file(zip_file_bytes, dest_path):
                     extracted_files.append(full_path)
 
 
-
+def collect_pdf_files():
+    pdf_files = []
+    for root, dirs, files in os.walk(UPLOAD_DIR):
+        for file in files:
+            if file.lower().endswith('.pdf'):
+                full_path = os.path.join(root, file)
+                scaned_path = full_path.replace(".pdf", ".pdf.json")
+                pdf_files.append((full_path, scaned_path))
+    return pdf_files
