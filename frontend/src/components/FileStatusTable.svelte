@@ -28,7 +28,7 @@
 </script>
 
 <div class="bg-white p-6 rounded-lg shadow-md mt-4">
-  <h2 class="text-xl font-semibold mb-4">File Processing Status</h2>
+  <h2 class="text-xl font-semibold mb-4">文件的处理状态/h2>
   <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">

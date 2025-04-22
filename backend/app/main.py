@@ -55,7 +55,7 @@ async def scan_files():
     return {"message": "成功启动扫描..."}
 
 
-@app.post("/backend/compare")
+@app.get("/backend/compare")
 async def compare_files():
     results = find_exact_same_substrings()
     return results

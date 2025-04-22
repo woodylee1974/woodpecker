@@ -2,13 +2,15 @@
   import { onMount, tick, setContext } from 'svelte';
   import FileUpload from './components/FileUpload.svelte';
   import FileList from './components/FileList.svelte';
+  import RelationView from './components/RelationView.svelte';
   
   let status = '';
-  let comparisonResults = [];
   let isLoading = false;
   let fileStatuses = {};
-  let allFilesIndexed = false;
+  let allFilesProcessed = false;
+  let partialFilesProcessed = false;
   let pdf_files = [];
+  let relation_data = null;
 
   onMount(async () => {
     fileList.collectInfo();
@@ -47,7 +49,8 @@
       
       // Reset state
       fileStatuses = {};
-      allFilesIndexed = false;
+      allFilesProcessed = false;
+      partialFilesProcessed = false;
       fileList.stopPolling();
       fileUpload.resetFileInput();
     } catch (error) {
@@ -80,9 +83,9 @@
     try {
       isLoading = true;
       const response = await fetch('http://localhost:8000/backend/compare', {
-        method: 'POST'
+        method: 'GET'
       });
-      const data = await response.json();
+      relation_data = await response.json();
     } catch (error) {
       status = '生成检查结果出错: ' + error.message;
     } finally {
@@ -92,9 +95,10 @@
 
 
   function handleStatusUpdate(event) {
-    const { fileStatuses: newFileStatuses, allFilesIndexed: newAllFilesIndexed } = event.detail;
+    const { fileStatuses: newFileStatuses, allFilesProcessed: newAllFilesProcessed, partialFilesProcessed: newPartialFilesProcessed } = event.detail;
     fileStatuses = newFileStatuses;
-    allFilesIndexed = newAllFilesIndexed;
+    allFilesProcessed = newAllFilesProcessed;
+    partialFilesProcessed = newPartialFilesProcessed;
   }
   
   let fileUpload;
@@ -108,16 +112,19 @@
     <FileUpload
       bind:this={fileUpload}
       {isLoading}
-      {allFilesIndexed}
+      {allFilesProcessed}
+      {partialFilesProcessed}
       on:upload={handleUpload}
       on:cleanup={handleCleanup}
       on:scan={handleScan}
+      on:compare={handleCompare}
     />
     
     <FileList
       bind:this={fileList}
       {fileStatuses}
-      {allFilesIndexed}
+      {allFilesProcessed}
+      {partialFilesProcessed}
       on:statusUpdate={handleStatusUpdate}
     />
     
@@ -126,19 +133,13 @@
         <p class="text-gray-700">{status}</p>
       </div>
     {/if}
-    
-    {#if comparisonResults.length > 0}
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4">Similar Segments</h2>
-        <div class="space-y-4">
-          {#each comparisonResults as result}
-            <div class="border p-4 rounded">
-              <p class="font-medium">{result}</p>
-            </div>
-          {/each}
-        </div>
-      </div>
+
+    {#if relation_data}
+    <RelationView
+       {relation_data}
+    />
     {/if}
+
   </div>
 </main>
 

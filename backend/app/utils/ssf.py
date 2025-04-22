@@ -132,10 +132,15 @@ def find_exact_same_substrings():
     exact_same_segments = find_exact_same_segments(paragraphs)
     results = defaultdict(list)
     matrix = {}
+    relations = {}
     for pdf_file, _ in pdf_files:
         matrix[pdf_file] = {
             filename: 0.0 for filename, _ in pdf_files
         }
+        relations[pdf_file] = {
+            filename: [] for filename, _ in pdf_files
+        }
+
     for segment, occurrences in exact_same_segments.items():
         print(f"Maximal exact-same segment: '{segment}'")
         for para_index, start_index, ratio in occurrences:
@@ -148,10 +153,13 @@ def find_exact_same_substrings():
         for occurrent1, occurrent2 in combinations(results[segment], 2):
             matrix[occurrent1[0]][occurrent2[0]] += occurrent1[3]
             matrix[occurrent2[0]][occurrent1[0]] += occurrent2[3]
+            relations[occurrent1[0]][occurrent2[0]].append((segment, occurrent1[1], occurrent1[2]))
+            relations[occurrent2[0]][occurrent1[0]].append((segment, occurrent2[1], occurrent2[2]))
 
     return {
         "same_segments": results,
-        "relation_matrix": matrix
+        "ratio_matrix": matrix,
+        "relation_matrix": relations
     }
 
 

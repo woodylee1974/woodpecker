@@ -1,7 +1,8 @@
 <script>
   // Props
   export let isLoading = false;
-  export let allFilesIndexed = false;
+  export let allFilesProcessed = false;
+  export let partialFilesProcessed = false;
   
   // Events
   import { createEventDispatcher } from 'svelte';
@@ -76,7 +77,7 @@
     </button>
     <button
       on:click={handleCompare}
-      disabled={isLoading || !allFilesIndexed}
+      disabled={isLoading}
       class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50"
     >
       比较文件

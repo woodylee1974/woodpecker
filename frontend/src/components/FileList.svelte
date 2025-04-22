@@ -4,7 +4,8 @@
   
   // Props
   export let fileStatuses = {};
-  export let allFilesIndexed = false;
+  export let allFilesProcessed = false;
+  export let partialFilesProcessed = False;
   let files = [];
   
   // Events
@@ -27,13 +28,14 @@
         const data = await response.json();
         files = data.files;
         console.log(fileStatuses);
-        allFilesIndexed = data.all_indexed;
+        allFilesProcessed = data.all_done;
+        partialFilesProcessed = data.partial_done;
         
         // Dispatch event to parent component
-        dispatch('statusUpdate', { fileStatuses, allFilesIndexed });
+        dispatch('statusUpdate', { fileStatuses, allFilesProcessed, partialFilesProcessed});
         
         // If all files are indexed, stop polling
-        if (allFilesIndexed) {
+        if (allFilesProcessed) {
           clearInterval(statusInterval);
         }
       } catch (error) {
@@ -73,8 +75,9 @@
         const response = await fetch('http://localhost:8000/backend/collect-info');
         const data = await response.json();
         files = data.files;
-        allFilesIndexed = data.all_indexed;
-        dispatch('statusUpdate', { fileStatuses, allFilesIndexed });
+        allFilesProcessed = data.all_done;
+        partialFilesProcessed = data.partial_done;
+        dispatch('statusUpdate', { fileStatuses, allFilesProcessed, partialFilesProcessed});
       } catch (error) {
         console.error('Error fetching file status:', error);
       }

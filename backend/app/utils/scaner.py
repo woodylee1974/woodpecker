@@ -72,7 +72,8 @@ def get_scan_status():
         status.append(1 if scan_obj['status']['state'] == 'completed' else 0)
     return {
         "files": files,
-        "all_indexed": sum(status) > 1
+        "partial_done": sum(status) > 1,
+        "all_done": all(status)
     }
 
 
@@ -128,7 +129,6 @@ def scan_loop():
                             }
                             g_file_status.file_status[pdf_file]['progress'] = progress
                         elif status['status'] == 'finished':
-                            print("status == finished")
                             json_data = scan_api.get_job_result(scan_obj['scan_key'])
                             with open(scan_obj['scaned_file'], "w") as f:
                                 json.dump(json_data, f)
@@ -139,7 +139,6 @@ def scan_loop():
                             g_file_status.file_status[pdf_file]['progress'] = 100
 
                         elif status['status'] == 'failed':
-                            print(status)
                             g_file_status.file_status[pdf_file]['status'] = {
                                 'state': 'error',
                                 'message': status['message']
