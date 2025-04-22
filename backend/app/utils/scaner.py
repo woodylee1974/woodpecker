@@ -30,15 +30,24 @@ class FileStatus:
                     },
                     'progress': 0
                 }
+                if os.path.exists(scaned_pdf_file):
+                    self.file_status[pdf_file]['status'] = {
+                        'state': 'completed',
+                        'message': '发现已扫描的文件!'
+                    }
+                    g_file_status.file_status[pdf_file]['progress'] = 100
 
 
 g_file_status = FileStatus()
 work_thread = None
 
 
+def collect_files():
+    g_file_status.collect()
+
+
 def start_scan():
     global work_thread
-    g_file_status.collect()
     if work_thread is None:
         start_scan_loop()
 
@@ -60,10 +69,10 @@ def get_scan_status():
             'status': scan_obj['status'],
             'progress': scan_obj['progress']
         })
-        status.append(scan_obj['status']['state'] == 'completed')
+        status.append(1 if scan_obj['status']['state'] == 'completed' else 0)
     return {
         "files": files,
-        "all_indexed": all(status)
+        "all_indexed": sum(status) > 1
     }
 
 
@@ -119,6 +128,7 @@ def scan_loop():
                             }
                             g_file_status.file_status[pdf_file]['progress'] = progress
                         elif status['status'] == 'finished':
+                            print("status == finished")
                             json_data = scan_api.get_job_result(scan_obj['scan_key'])
                             with open(scan_obj['scaned_file'], "w") as f:
                                 json.dump(json_data, f)
@@ -129,6 +139,7 @@ def scan_loop():
                             g_file_status.file_status[pdf_file]['progress'] = 100
 
                         elif status['status'] == 'failed':
+                            print(status)
                             g_file_status.file_status[pdf_file]['status'] = {
                                 'state': 'error',
                                 'message': status['message']

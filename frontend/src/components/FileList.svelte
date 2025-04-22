@@ -12,14 +12,7 @@
   const dispatch = createEventDispatcher();
   
   let statusInterval;
-  
-  // Convert fileStatuses object to array format expected by FileStatusTable
-//  $: files = Object.entries(fileStatuses).map(([name, status]) => ({
-//    name,
-//    status: status.status,
-//    progress: status.progress
-//  }));
-  
+
   // Start polling for file status
   function startStatusPolling() {
     // Clear any existing interval
@@ -73,6 +66,18 @@
     if (statusInterval) {
       clearInterval(statusInterval);
     }
+  }
+
+  export async function collectInfo() {
+      try {
+        const response = await fetch('http://localhost:8000/backend/collect-info');
+        const data = await response.json();
+        files = data.files;
+        allFilesIndexed = data.all_indexed;
+        dispatch('statusUpdate', { fileStatuses, allFilesIndexed });
+      } catch (error) {
+        console.error('Error fetching file status:', error);
+      }
   }
 </script>
 

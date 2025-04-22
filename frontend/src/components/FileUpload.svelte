@@ -39,7 +39,7 @@
 </script>
 
 <div class="bg-white p-6 rounded-lg shadow-md">
-  <h2 class="text-xl font-semibold mb-4">Upload ZIP File</h2>
+  <h2 class="text-xl font-semibold mb-4">请在此上传zip文件</h2>
   <input
     type="file"
     accept=".zip"
@@ -77,7 +77,7 @@
     <button
       on:click={handleCompare}
       disabled={isLoading || !allFilesIndexed}
-      class="bg-green-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50"
+      class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50"
     >
       比较文件
     </button>

@@ -1,12 +1,18 @@
 <script>
+  import { onMount, tick, setContext } from 'svelte';
   import FileUpload from './components/FileUpload.svelte';
   import FileList from './components/FileList.svelte';
   
-  let uploadStatus = '';
+  let status = '';
   let comparisonResults = [];
   let isLoading = false;
   let fileStatuses = {};
   let allFilesIndexed = false;
+  let pdf_files = [];
+
+  onMount(async () => {
+    fileList.collectInfo();
+  })
   
   async function handleUpload(event) {
     const { file } = event.detail;
@@ -22,9 +28,9 @@
         body: formData
       });
       const data = await response.json();
-      uploadStatus = data.message || data.error;
+      status = data.message || data.error;
     } catch (error) {
-      uploadStatus = 'Error uploading file: ' + error.message;
+      status = 'Error uploading file: ' + error.message;
     } finally {
       isLoading = false;
     }
@@ -45,7 +51,7 @@
       fileList.stopPolling();
       fileUpload.resetFileInput();
     } catch (error) {
-      uploadStatus = 'Error cleaning up: ' + error.message;
+      status = '清空缓冲区出错: ' + error.message;
     } finally {
       isLoading = false;
     }
@@ -64,7 +70,7 @@
         fileList.startPolling();
       }
     } catch (error) {
-      uploadStatus = 'Error comparing files: ' + error.message;
+      status = '扫描文件出错: ' + error.message;
     } finally {
       isLoading = false;
     }
@@ -78,7 +84,7 @@
       });
       const data = await response.json();
     } catch (error) {
-      uploadStatus = 'Error comparing files: ' + error.message;
+      status = '生成检查结果出错: ' + error.message;
     } finally {
       isLoading = false;
     }
@@ -115,9 +121,9 @@
       on:statusUpdate={handleStatusUpdate}
     />
     
-    {#if uploadStatus}
+    {#if status}
       <div class="bg-gray-100 p-4 rounded">
-        <p class="text-gray-700">{uploadStatus}</p>
+        <p class="text-gray-700">{status}</p>
       </div>
     {/if}
     

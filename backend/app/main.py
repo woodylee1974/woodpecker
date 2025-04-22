@@ -10,7 +10,8 @@ import json
 import time
 import random
 from utils.file_man import unzip_file
-from utils.scaner import start_scan, get_scan_status
+from utils.scaner import start_scan, get_scan_status, collect_files
+from utils.ssf import find_exact_same_substrings
 
 
 app = FastAPI()
@@ -49,23 +50,14 @@ async def cleanup():
 
 @app.post("/backend/scan")
 async def scan_files():
+    collect_files()
     start_scan()
     return {"message": "成功启动扫描..."}
 
 
 @app.post("/backend/compare")
 async def compare_files():
-    # This is a placeholder for your comparison algorithm
-    # You'll need to implement the actual comparison logic
-    extracted_dir = UPLOAD_DIR / "extracted"
-    if not extracted_dir.exists():
-        return {"error": "No files to compare"}
-    
-    # Placeholder for comparison results
-    results = {
-        "similar_segments": []
-    }
-    
+    results = find_exact_same_substrings()
     return results
 
 
@@ -74,6 +66,15 @@ async def get_file_status():
     data = get_scan_status()
     return JSONResponse(
             content= data,
+            status_code=200
+        )
+
+@app.get("/backend/collect-info")
+async def get_file_status():
+    collect_files()
+    data = get_scan_status()
+    return JSONResponse(
+            content=data,
             status_code=200
         )
 
