@@ -153,8 +153,8 @@ def find_exact_same_substrings():
         for occurrent1, occurrent2 in combinations(results[segment], 2):
             matrix[occurrent1[0]][occurrent2[0]] += occurrent1[3]
             matrix[occurrent2[0]][occurrent1[0]] += occurrent2[3]
-            relations[occurrent1[0]][occurrent2[0]].append((segment, occurrent1[1], occurrent1[2]))
-            relations[occurrent2[0]][occurrent1[0]].append((segment, occurrent2[1], occurrent2[2]))
+            relations[occurrent1[0]][occurrent2[0]].append((segment, occurrent1[1], occurrent2[1], occurrent1[3]))
+            relations[occurrent2[0]][occurrent1[0]].append((segment, occurrent2[1], occurrent1[1], occurrent2[3]))
 
     return {
         "same_segments": results,

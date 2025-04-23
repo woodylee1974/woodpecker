@@ -1,18 +1,15 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-import os
 import shutil
-import zipfile
 from pathlib import Path
-from typing import List, Dict
-import json
-import time
-import random
+from typing import List
 from utils.file_man import unzip_file
 from utils.scaner import start_scan, get_scan_status, collect_files
 from utils.ssf import find_exact_same_substrings
-
+from utils.pdf_show import render_image
+from pydantic import BaseModel
+import base64
 
 app = FastAPI()
 
@@ -77,6 +74,30 @@ async def get_file_status():
             content=data,
             status_code=200
         )
+
+
+class PdfInfo(BaseModel):
+    file: str
+    block: dict
+
+
+@app.post("/backend/get_pdf_pair")
+async def get_pdf_pair(pdf_pair: List[PdfInfo]):
+    images = []
+    for pdf in pdf_pair:
+        from_file = pdf.file
+        bbox = pdf.block['bbox']
+        page = pdf.block['page']
+        page_boxes = [(page, bbox)]
+        offset = 0
+        image = render_image(from_file, page_boxes, offset)
+        images.append(base64.b64encode(image).decode('utf-8'))
+    return {
+        "left_image": images[0],
+        "right_image": images[1],
+        "message": "Successfully retrieved PDF images."
+    }
+
 
 
 if __name__ == "__main__":

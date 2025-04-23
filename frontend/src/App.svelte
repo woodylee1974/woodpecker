@@ -3,6 +3,8 @@
   import FileUpload from './components/FileUpload.svelte';
   import FileList from './components/FileList.svelte';
   import RelationView from './components/RelationView.svelte';
+  import SegmentView from './components/SegmentView.svelte';
+  import ImagePair from './components/ImagePair.svelte';
   
   let status = '';
   let isLoading = false;
@@ -11,6 +13,11 @@
   let partialFilesProcessed = false;
   let pdf_files = [];
   let relation_data = null;
+  let relation_node = null;
+  let full_pdf_file = '';
+  let leftSrc = null;
+  let rightSrc = null;
+  let selectSegment = null;
 
   onMount(async () => {
     fileList.collectInfo();
@@ -100,6 +107,32 @@
     allFilesProcessed = newAllFilesProcessed;
     partialFilesProcessed = newPartialFilesProcessed;
   }
+
+  function showElement(event) {
+    const { pdf_file } = event.detail;
+    full_pdf_file = pdf_file;
+    relation_node = relation_data.relation_matrix[pdf_file];
+  }
+
+  async function showPdfImage(event) {
+    selectSegment = event.detail;
+    try {
+      const response = await fetch('http://localhost:8000/backend/get_pdf_pair', {
+        method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+        body: JSON.stringify(selectSegment)
+      });
+      const data = await response.json();
+      leftSrc = `data:image/png;base64,${data.left_image}`;
+      rightSrc = `data:image/png;base64,${data.right_image}`;
+      status = data.message;
+    } catch (error) {
+      status = '取PDF出错: ' + error.message;
+    } finally {
+    }
+  }
   
   let fileUpload;
   let fileList;
@@ -137,6 +170,23 @@
     {#if relation_data}
     <RelationView
        {relation_data}
+       on:showElement={showElement}
+    />
+    {/if}
+
+    {#if relation_node}
+    <SegmentView
+       {relation_node}
+       {full_pdf_file}
+       on:showPdfImage={showPdfImage}
+    />
+    {/if}
+
+    {#if leftSrc !== null && rightSrc !== null}
+    <ImagePair
+       {leftSrc}
+       {rightSrc}
+       bind:selectSegment={selectSegment}
     />
     {/if}
 
