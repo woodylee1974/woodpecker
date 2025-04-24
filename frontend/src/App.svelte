@@ -139,7 +139,7 @@
 </script>
 
 <main class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">Text Compare</h1>
+  <h1 class="text-3xl font-bold mb-8">标书相关性检查工具(prototype v0.0.1)</h1>
   
   <div class="space-y-6">
     <FileUpload
