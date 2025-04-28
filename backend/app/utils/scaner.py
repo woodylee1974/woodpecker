@@ -101,13 +101,16 @@ def scan_loop():
                         if job is not None:
                             if job.status:
                                 g_file_status.file_status[pdf_file]['scan_key'] = job.result_path
+                                print(f"commit job: {job.result_path}")
                                 g_file_status.file_status[pdf_file]['status'] = {
                                     'state': 'pending',
                                     'message': '已将待扫描文件入队...'
                                 }
                                 g_file_status.file_status[pdf_file]['progress'] = 0
                     else:
+                        print(f"1:scanobj_scan_key={scan_obj['scan_key']}")
                         status = scan_api.get_job_status(scan_obj['scan_key'])
+                        print(f"2:scanobj_scan_key={scan_obj['scan_key']}, status={status['status']}")
                         if status['status'] == "started":
                             progress = json.loads(status['message'])
                             stage = progress.get("stage", None)
@@ -129,9 +132,12 @@ def scan_loop():
                             }
                             g_file_status.file_status[pdf_file]['progress'] = progress
                         elif status['status'] == 'finished':
+                            print(f"3:scanobj_scan_key={scan_obj['scan_key']}")
                             json_data = scan_api.get_job_result(scan_obj['scan_key'])
+                            print(f"4:scanobj_scan_key={scan_obj['scan_key']}")
                             with open(scan_obj['scaned_file'], "w") as f:
                                 json.dump(json_data, f)
+                                print(f"5:scanobj_scan_key={scan_obj['scan_key']}")
                             g_file_status.file_status[pdf_file]['status'] = {
                                 'state': 'completed',
                                 'message': "扫描完成！"
@@ -144,6 +150,7 @@ def scan_loop():
                                 'message': status['message']
                             }
                 time.sleep(0.5)
+                print("tick")
         else:
             time.sleep(1)
 

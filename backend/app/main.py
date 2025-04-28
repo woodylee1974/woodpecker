@@ -1,6 +1,11 @@
+import os
+
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi import HTTPException
 import shutil
 from pathlib import Path
 from typing import List
@@ -98,7 +103,23 @@ async def get_pdf_pair(pdf_pair: List[PdfInfo]):
         "message": "Successfully retrieved PDF images."
     }
 
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except (HTTPException, StarletteHTTPException) as ex:
+            if ex.status_code == 404:
+                return await super().get_response("index.html", scope)
+            else:
+                raise ex
 
+FRONTEND_BUILD_DIR = os.path.join(os.getcwd(), "../..", "build")
+
+app.mount(
+    "/",
+    SPAStaticFiles(directory=FRONTEND_BUILD_DIR, html=True),
+    name="spa-static-files",
+)
 
 if __name__ == "__main__":
     import uvicorn
