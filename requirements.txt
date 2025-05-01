@@ -1,8 +1,0 @@
-streamlit
-openpyxl
-python-docx
-numpy
-sortedcontainers
-fastapi
-uvicorn[standard]
-pypdfium2
