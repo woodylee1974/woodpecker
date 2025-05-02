@@ -127,7 +127,7 @@ function encodePathToHtmlId(path) {
                 fill={isHighlighted ? "#0d6efd" : "#d1d5db"}
                 class="text-sm font-medium"
               >
-                {connection.weight}
+                {(connection.weight * 100).toFixed(3)}%
               </text>
           {/if}
         {/if}
