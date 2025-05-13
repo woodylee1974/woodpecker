@@ -46,6 +46,7 @@ def find_exact_same_segments(paragraphs, min_len=4):
     potential_segments = []
     for i in range(1, len(lcp_array)):
         if lcp_array[i] >= min_len:
+            print(lcp_array[i])
             segment = combined_text[
                 suffix_array[i] : suffix_array[i] + lcp_array[i]
             ]
@@ -172,16 +173,23 @@ if __name__ == '__main__':
     #     "第四个段落又出现了相同的片段世界你好，你好吗？"
     # ]
     #
-    # result = find_exact_same_segments(paragraphs)
-    # for segment, occurrences in result.items():
-    #     print(f"Maximal exact-same segment: '{segment}'")
-    #     for para_index, start_index, ratio in occurrences:
-    #         print(f"  - Paragraph {para_index}, Start: {start_index}, Ratio: {ratio:.4f}")
-    #     print("-" * 30)
+    #paragraphs = ["betcai", "eeetcas"] # base edge case
+    paragraphs = [
+        "我曾经跨过山和大海，也穿过人山人海。",
+        "你有没有听过我曾经的故事？",
+        "我曾经跨过海和大山"
+    ]
+    #paragraphs = ["你好世界", "你好世界"] # longest common prefix calculation error
+    result = find_exact_same_segments(paragraphs)
+    for segment, occurrences in result.items():
+        print(f"Maximal exact-same segment: '{segment}'")
+        for para_index, start_index, ratio in occurrences:
+            print(f"  - Paragraph {para_index}, Start: {start_index}, Ratio: {ratio:.4f}")
+        print("-" * 30)
 
 
 
-    result = find_exact_same_substrings()
+    # result = find_exact_same_substrings()
     # for segment, _ in result['same_segments'].items():
     #     print(segment)
 
